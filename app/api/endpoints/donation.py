@@ -45,8 +45,8 @@ async def create_donation(
 @router.get(
     '/my',
     response_model=list[DonationDBCreateNOUser],
-    # использую другую схему (без user_id), посколько не работает
-    #response_model_exclude={'user_id'}
+    # использую другую схему (без user_id), посколько response_model_exclude
+    # не работает
 )
 async def get_my_donations(
     user: Annotated[User, Depends(current_user)],
