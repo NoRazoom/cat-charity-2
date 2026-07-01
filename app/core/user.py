@@ -16,6 +16,10 @@ from app.models.user import User
 from app.schemas.user import UserCreate
 
 
+TOKEN_LIFETIME = 3600
+MIN_LEN_PASSWORD = 3
+
+
 async def get_user_db(
     session: Annotated[AsyncSession, Depends(get_async_session)]
 ):
@@ -26,7 +30,7 @@ bearer_transport = BearerTransport(tokenUrl='auth/jwt/login')
 
 
 def get_jwt_strategy() -> JWTStrategy:
-    return JWTStrategy(secret=settings.secret, lifetime_seconds=3600)
+    return JWTStrategy(secret=settings.secret, lifetime_seconds=TOKEN_LIFETIME)
 
 
 auth_backend = AuthenticationBackend(
@@ -43,7 +47,7 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
         password: str,
         user: Union[UserCreate, User],
     ) -> None:
-        if len(password) < 3:
+        if len(password) < MIN_LEN_PASSWORD:
             error = 'Пароль должен содержать не менее 3 символов'
             raise InvalidPasswordException(
                 reason=error
